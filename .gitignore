@@ -1,0 +1,35 @@
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local/archive material that should not be pushed as source
+_archive_unused/
+*/out/
+
+# Local logs and generated solver transcripts
+*.log
+*.trn
+*.err
+*.out
+
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.bcf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+
+# ANSYS/Workbench generated databases and result files
+*.DSP
+*.db
+*.esav
+*.full
+*.mntr
+*.rst
+*.stat
+*.wbpj
+*_files/

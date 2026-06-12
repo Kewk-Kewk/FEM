@@ -1,0 +1,7 @@
+ansys-fluent-core
+gmsh
+h5py
+meshio
+numpy
+pandas
+matplotlib
