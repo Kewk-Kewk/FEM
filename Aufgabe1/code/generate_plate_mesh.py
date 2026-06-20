@@ -1,3 +1,14 @@
+"""Aufgabe 1.1 a) -- CFD-Netzgenerierung fuer die 2D-Plattenumstroemung.
+
+Erzeugt ein Gmsh-Dreiecksnetz und konvertiert es in das Fluent-.msh-Format.
+Die Rechendomaene ist ein Rechteck mit ausgeschnittener Platte in der Mitte.
+Verfeinerungszonen:
+  - An der Plattenkante (Staudruck, Drucksprung)
+  - Im Nachlaufbereich (Unterdruck, reduzierte Geschwindigkeit)
+  - Optionale Grenzschicht (BoundaryLayer-Feld)
+
+Benoetigte Pakete: gmsh, fluent_mesh_writer (eigenes Modul)
+"""
 from __future__ import annotations
 
 import argparse
@@ -10,8 +21,9 @@ from fluent_mesh_writer import write_fluent_mesh
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Generate the Aufgabe 1.1 Fluent 2D mesh.")
-    parser.add_argument("--project", type=int, default=27)
+    parser = argparse.ArgumentParser(
+        description="Generate a 2D mesh for the CFD plate simulation."
+    )
     parser.add_argument("--output", type=Path, default=Path("Aufgabe1/out/plate_2d.msh"))
     parser.add_argument("--gmsh-output", type=Path, default=Path("Aufgabe1/out/plate_2d_gmsh.msh"))
     parser.add_argument("--no-boundary-layer", action="store_true")
@@ -24,6 +36,11 @@ def bbox_close(value: float, target: float, tol: float) -> bool:
 
 
 def classify_boundary_curves(params, curve_tags: list[int]) -> dict[str, list[int]]:
+    """Ordne die Gmsh-Kurven den physikalischen Raendern zu.
+
+    Anhand der Bounding-Box jeder Kurve wird entschieden, ob sie
+    zum Einlass, Auslass, Ober-/Unterseite oder zur Plattenwand gehoert.
+    """
     domain = params.domain_m
     tol = max(params.sign_thickness_m * 0.25, 1.0e-6)
     groups = {name: [] for name in ["inlet", "outlet", "top", "bottom", "plate_wall"]}
@@ -50,6 +67,12 @@ def classify_boundary_curves(params, curve_tags: list[int]) -> dict[str, list[in
 
 
 def create_geometry(params, no_boundary_layer: bool) -> None:
+    """Erstelle die 2D-Geometrie und das Netzfeld in Gmsh.
+
+    Erzeugt ein Rechteck (Domain) mit einem ausgeschnittenen Rechteck (Platte)
+    und setzt Verfeinerungsfelder (Distance/Threshold fuer Plattenkante,
+    Box fuer Nachlauf, optional BoundaryLayer).
+    """
     domain = params.domain_m
     mesh = params.recommended_mesh_m
 
@@ -170,7 +193,7 @@ def collect_mesh_data() -> tuple[
 
 def main() -> None:
     args = parse_args()
-    params = get_params(args.project)
+    params = get_params()
 
     gmsh.initialize()
     try:

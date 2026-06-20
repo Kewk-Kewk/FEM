@@ -1,3 +1,17 @@
+"""Aufgabe 2 -- Kerbformzahl einer Scheibe mit Loechern.
+
+Dieses Skript wertet die Konvergenzstudie fuer die Kerbformzahl alpha_k
+aus.  Die Maximalspannungen aus den ANSYS-Workbench-Rechnungen sind
+als Datenwerte eingetragen; das Skript berechnet:
+
+  sigma_n = n_y / t            (Nennspannung)
+  sigma_max = Mittelwert der drei feinsten Netzstufen
+  alpha_k = sigma_max / sigma_n  (Kerbformzahl)
+
+Ausgabe: CSV, Plot, Zusammenfassung, Geometrieskizze.
+
+Projekt 27: d = 70 mm, l = 110 mm, t = 4 mm, n_y = 10 N/mm.
+"""
 from __future__ import annotations
 
 import csv
@@ -11,43 +25,56 @@ import numpy as np
 from matplotlib.patches import Circle, Rectangle
 
 
-PROJECT = 27
-D_MM = 70.0
-L_MM = 110.0
-T_MM = 4.0
-NY_N_PER_MM = 10.0
+# ---------------------------------------------------------------------------
+# Projektdaten (Projekt Nr. 27)
+# ---------------------------------------------------------------------------
+D_MM = 70.0           # Lochdurchmesser [mm]
+L_MM = 110.0          # Lochabstand (Periode) [mm]
+T_MM = 4.0            # Scheibendicke [mm]
+NY_N_PER_MM = 10.0    # Linienlast [N/mm]
 
-LOCAL_MESH_MM = np.array([10.0, 8.0, 5.0, 3.0, 2.0, 1.0])
-SIGMA_MAX_MPA = np.array([9.4565, 9.2336, 9.0780, 9.1508, 9.2112, 9.1243])
+# Konvergenzwerte aus den finalen ANSYS-Workbench-Screenshots
+# 10.PNG, 8.PNG, 6.PNG, 3.PNG, 2.PNG plus 1-mm-Wert: sigma_y am Lochrand.
+LOCAL_MESH_MM = np.array([10.0, 8.0, 6.0, 3.0, 2.0, 1.0])
+SIGMA_MAX_MPA = np.array([9.1539, 9.2332, 9.2341, 9.2157, 9.2263, 9.1063])
 
 OUT_DIR = Path("Aufgabe2/out")
+DATA_DIR = Path("Aufgabe2/data")
 
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     sigma_nominal_mpa = NY_N_PER_MM / T_MM
-    # The finest three meshes form a narrow plateau. The report uses their mean
-    # instead of a single screenshot value.
-    sigma_converged_mpa = float(np.mean([9.1508, 9.2112, 9.1243]))
+    # The finest three meshes form the convergence plateau. The report uses
+    # their mean instead of a single screenshot value.
+    stable_meshes = [3.0, 2.0, 1.0]
+    stable = SIGMA_MAX_MPA[np.isin(LOCAL_MESH_MM, stable_meshes)]
+    sigma_converged_mpa = float(np.mean(stable))
     alpha_k = sigma_converged_mpa / sigma_nominal_mpa
-    stable = SIGMA_MAX_MPA[np.isin(LOCAL_MESH_MM, [3.0, 2.0, 1.0])]
     stable_span_percent = float((stable.max() - stable.min()) / sigma_converged_mpa * 100.0)
-    change_3_to_2_percent = float((9.2112 - 9.1508) / 9.1508 * 100.0)
-    change_2_to_1_percent = float((9.1243 - 9.2112) / 9.2112 * 100.0)
+    sigma_by_mesh = dict(zip(LOCAL_MESH_MM, SIGMA_MAX_MPA))
+    change_3_to_2_percent = float(
+        (sigma_by_mesh[2.0] - sigma_by_mesh[3.0]) / sigma_by_mesh[3.0] * 100.0
+    )
+    change_2_to_1_percent = float(
+        (sigma_by_mesh[1.0] - sigma_by_mesh[2.0]) / sigma_by_mesh[2.0] * 100.0
+    )
 
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     csv_path = OUT_DIR / "kerb_convergence.csv"
-    with csv_path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["local_mesh_mm", "sigma_max_MPa", "alpha_k"])
-        for mesh, sigma in zip(LOCAL_MESH_MM, SIGMA_MAX_MPA):
-            writer.writerow([f"{mesh:.3f}", f"{sigma:.6f}", f"{sigma / sigma_nominal_mpa:.6f}"])
+    data_csv_path = DATA_DIR / "kerb_convergence.csv"
+    for target in [csv_path, data_csv_path]:
+        with target.open("w", newline="", encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(["local_mesh_mm", "sigma_max_MPa", "alpha_k"])
+            for mesh, sigma in zip(LOCAL_MESH_MM, SIGMA_MAX_MPA):
+                writer.writerow([f"{mesh:.3f}", f"{sigma:.6f}", f"{sigma / sigma_nominal_mpa:.6f}"])
 
     summary = [
         "Aufgabe 2 Kerbformzahl",
         "=======================",
         "",
-        f"project = {PROJECT}",
         f"d_mm = {D_MM:.6f}",
         f"l_mm = {L_MM:.6f}",
         f"t_mm = {T_MM:.6f}",
@@ -55,11 +82,13 @@ def main() -> None:
         f"sigma_nominal_MPa = {sigma_nominal_mpa:.6f}",
         f"sigma_max_converged_MPa = {sigma_converged_mpa:.6f}",
         f"alpha_k = {alpha_k:.6f}",
+        f"stable_meshes_mm = {','.join(f'{mesh:g}' for mesh in stable_meshes)}",
         f"stable_span_3_2_1_percent = {stable_span_percent:.6f}",
         f"change_3_to_2_percent = {change_3_to_2_percent:.6f}",
         f"change_2_to_1_percent = {change_2_to_1_percent:.6f}",
         "note = The reference stress is the mean of the stable 3/2/1 mm plateau for Normalspannung in y-direction.",
         f"csv = {csv_path.as_posix()}",
+        f"report_csv = {data_csv_path.as_posix()}",
     ]
     (OUT_DIR / "kerb_summary.txt").write_text("\n".join(summary) + "\n", encoding="utf-8")
 

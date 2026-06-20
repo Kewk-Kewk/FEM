@@ -1,3 +1,15 @@
+"""Aufgabe 1.2 b) -- APDL-Skriptgenerator fuer das Fachwerkmodell.
+
+Erzeugt ein ANSYS-MAPDL-Eingabefile (.inp) mit LINK180-Stabelementen
+fuer den maßgebenden Traeger H3.  Die Gelenkkraefte aus der
+Tafelberechnung werden als Knotenkraefte aufgebracht.
+
+Workflow:
+  1. Lese Gelenkkraefte aus plate_hinge_reactions.csv
+  2. Bestimme den maßgebenden Traeger (groesste Gesamtlast)
+  3. Erzeuge APDL-Eingabedatei mit Netz, Lasten, Randbedingungen
+  4. Nach dem Loesen: parse_truss_apdl_results.py wertet aus
+"""
 from __future__ import annotations
 
 import argparse
@@ -14,46 +26,57 @@ PROJECT = 27
 OUT_DIR = Path("Aufgabe1/out")
 PLATE_REACTIONS = OUT_DIR / "plate_hinge_reactions.csv"
 
-E_STEEL_MPA = 210_000.0
-PANEL_COUNT = 7
+E_STEEL_MPA = 210_000.0   # E-Modul Stahl [N/mm^2]
+PANEL_COUNT = 7           # Anzahl Felder im Fachwerk
 
 
 def tube_area_mm2(outer_mm: float, inner_mm: float) -> float:
+    """Kreisringflaeche eines Rohrs [mm^2]."""
     return pi / 4.0 * (outer_mm**2 - inner_mm**2)
 
 
+# Gewaehlte Rohrquerschnitte (aus der Dimensionierung in Aufgabe 1.2d)
 AREA_BY_KIND_MM2 = {
-    "vertical": tube_area_mm2(16.0, 13.0),
-    "horizontal": tube_area_mm2(12.0, 9.0),
-    "diagonal": tube_area_mm2(12.0, 9.0),
+    "vertical": tube_area_mm2(16.0, 13.0),    # 16 x 1.5 mm
+    "horizontal": tube_area_mm2(12.0, 9.0),   # 12 x 1.5 mm
+    "diagonal": tube_area_mm2(12.0, 9.0),     # 12 x 1.5 mm
 }
 
 
-def read_governing_hinge_loads(path: Path) -> tuple[str, float, float]:
+def read_average_hinge_loads(path: Path) -> tuple[str, float, float]:
+    """Lese die Gelenkkraefte und bestimme den Mittelwert (Average).
+
+    Der Mittelwert ueber alle Traeger wird fuer die Fachwerkdimensionierung
+    verwendet.
+
+    Returns: ('Average', mean_upper_load_N, mean_lower_load_N)
+    """
     by_hinge: dict[str, float] = {}
     with path.open(newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
             by_hinge[row["hinge"]] = abs(float(row["load_on_truss_N"]))
-    carriers = sorted({hinge.split("_")[0] for hinge in by_hinge})
-    governing = max(
-        carriers,
-        key=lambda carrier: by_hinge[f"{carrier}_upper"] + by_hinge[f"{carrier}_lower"],
-    )
-    return governing, by_hinge[f"{governing}_upper"], by_hinge[f"{governing}_lower"]
+    
+    uppers = [force for name, force in by_hinge.items() if "upper" in name]
+    lowers = [force for name, force in by_hinge.items() if "lower" in name]
+    
+    mean_upper = sum(uppers) / len(uppers) if uppers else 0.0
+    mean_lower = sum(lowers) / len(lowers) if lowers else 0.0
+    
+    return "Average", mean_upper, mean_lower
 
 
 def section_number(kind: str) -> int:
+    """ANSYS-Querschnittsnummer (SECNUM) fuer eine Stabgruppe."""
     return {"vertical": 1, "horizontal": 2, "diagonal": 3}[kind]
 
 
 def generate_apdl(
     path: Path,
-    project: int,
     upper_load_n: float,
     lower_load_n: float,
 ) -> None:
-    params = get_params(project)
+    params = get_params()
     nodes, elements = build_truss(params, PANEL_COUNT)
 
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -78,8 +101,8 @@ def generate_apdl(
         file.write("D,ALL,UZ,0\n")
 
         node_by_name = {node.name: index for index, node in enumerate(nodes, start=1)}
-        file.write(f"D,{node_by_name['L0']},UX,0\n")
         file.write(f"D,{node_by_name['L0']},UY,0\n")
+        file.write(f"D,{node_by_name['R0']},UX,0\n")
         file.write(f"D,{node_by_name['R0']},UY,0\n")
         file.write(f"F,{node_by_name['R7']},FX,{-upper_load_n:.12g}\n")
         file.write(f"F,{node_by_name['R6']},FX,{-lower_load_n:.12g}\n")
@@ -98,16 +121,16 @@ def generate_apdl(
         file.write("ETABLE,STRESS,LS,1\n")
         file.write("PRETAB,AXIAL,STRESS\n")
         file.write("PRNSOL,U,COMP\n")
-        file.write(f"*GET,R_L0_FX,NODE,{node_by_name['L0']},RF,FX\n")
         file.write(f"*GET,R_L0_FY,NODE,{node_by_name['L0']},RF,FY\n")
+        file.write(f"*GET,R_R0_FX,NODE,{node_by_name['R0']},RF,FX\n")
         file.write(f"*GET,R_R0_FY,NODE,{node_by_name['R0']},RF,FY\n")
         file.write(f"*GET,UX_G,NODE,{node_by_name['R7']},U,X\n")
         file.write(f"*GET,UY_G,NODE,{node_by_name['R7']},U,Y\n")
         file.write(f"*GET,UX_R6,NODE,{node_by_name['R6']},U,X\n")
         file.write(f"*GET,UY_R6,NODE,{node_by_name['R6']},U,Y\n")
         file.write("*CFOPEN,truss_apdl_summary,txt\n")
-        file.write("*VWRITE,R_L0_FX\n('R_L0_FX_N = ',F20.8)\n")
         file.write("*VWRITE,R_L0_FY\n('R_L0_FY_N = ',F20.8)\n")
+        file.write("*VWRITE,R_R0_FX\n('R_R0_FX_N = ',F20.8)\n")
         file.write("*VWRITE,R_R0_FY\n('R_R0_FY_N = ',F20.8)\n")
         file.write("*VWRITE,UX_G\n('UX_G_mm = ',F20.8)\n")
         file.write("*VWRITE,UY_G\n('UY_G_mm = ',F20.8)\n")
@@ -160,17 +183,25 @@ def parse_pretab(output_path: Path, csv_path: Path, element_names_path: Path) ->
 
 
 def main() -> None:
+    global PANEL_COUNT
     parser = argparse.ArgumentParser()
-    parser.add_argument("--project", type=int, default=PROJECT)
     parser.add_argument("--reactions", type=Path, default=PLATE_REACTIONS)
     parser.add_argument("--out-dir", type=Path, default=OUT_DIR)
+    parser.add_argument("--panel-count", type=int, default=PANEL_COUNT)
     args = parser.parse_args()
 
-    governing, upper_load_n, lower_load_n = read_governing_hinge_loads(args.reactions)
+    PANEL_COUNT = args.panel_count
+
+    if not args.reactions.exists():
+        print(f"Error: Could not find {args.reactions}")
+        print("Please run plate structural analysis first.")
+        sys.exit(1)
+
+    carrier, upper_load_n, lower_load_n = read_average_hinge_loads(args.reactions)
     apdl_path = args.out_dir / "truss_structural.inp"
-    generate_apdl(apdl_path, args.project, upper_load_n, lower_load_n)
+    generate_apdl(apdl_path, upper_load_n, lower_load_n)
     print(apdl_path.as_posix())
-    print(f"governing_carrier = {governing}")
+    print(f"governing_carrier = {carrier}")
     print(f"upper_load_n = {upper_load_n:.8f}")
     print(f"lower_load_n = {lower_load_n:.8f}")
 

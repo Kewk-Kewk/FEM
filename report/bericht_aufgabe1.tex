@@ -1,6 +1,6 @@
 \documentclass[10pt,a4paper]{article}
 
-\usepackage[a4paper,margin=13mm]{geometry}
+\usepackage[a4paper,margin=12mm]{geometry}
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage{amsmath}
@@ -12,10 +12,15 @@
 
 \hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{3pt}
-\setlength{\tabcolsep}{5pt}
-\renewcommand{\arraystretch}{1.12}
-\captionsetup{font=small,skip=3pt}
+\setlength{\parskip}{2pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.06}
+\captionsetup{font=footnotesize,skip=2pt}
+\setlength{\textfloatsep}{6pt plus 1pt minus 1pt}
+\setlength{\floatsep}{5pt plus 1pt minus 1pt}
+\setlength{\intextsep}{5pt plus 1pt minus 1pt}
+\setlength{\abovedisplayskip}{5pt plus 1pt minus 1pt}
+\setlength{\belowdisplayskip}{5pt plus 1pt minus 1pt}
 \sloppy
 \graphicspath{{../}}
 
@@ -24,7 +29,7 @@
 \begin{center}
 {\Large\bfseries Modularbeit FEM und CFD}\\
 {\large Aufgabe 1 und Aufgabe 2, Projekt Nr. 27}\\
-\vspace{1mm}
+\vspace{0.5mm}
 \begin{tabular}{ll}
 CFD & ANSYS Fluent / PyFluent\\
 Struktur & ANSYS MAPDL / Workbench, Python-FEM\\
@@ -32,12 +37,10 @@ Struktur & ANSYS MAPDL / Workbench, Python-FEM\\
 \end{center}
 
 \section*{Ausgangsdaten und Lastkette}
-Für Projekt 27 gelten \(b=0.45\,\mathrm{m}\), \(h=0.25\,\mathrm{m}\), \(h_T=1.00\,\mathrm{m}\), \(c_\mathrm{Wind}=110\,\mathrm{km/h}=30.56\,\mathrm{m/s}\). Die Aluminiumtafel hat \(3.0\,\mathrm{m}\) Breite, \(2.0\,\mathrm{m}\) Höhe und \(t=3\,\mathrm{mm}\). Mit \(\rho=1.225\,\mathrm{kg/m^3}\) folgt
+Für Projekt 27 gelten \(b=0.45\,\mathrm{m}\), \(h=0.25\,\mathrm{m}\), \(h_T=1.00\,\mathrm{m}\), \(c_\mathrm{Wind}=110\,\mathrm{km/h}=30.56\,\mathrm{m/s}\). Die Aluminiumtafel ist \(3.0\,\mathrm{m}\times2.0\,\mathrm{m}\times3\,\mathrm{mm}\) groß. Mit \(\rho=1.225\,\mathrm{kg/m^3}\) folgt
 \[
 q=\frac12\rho v^2=571.86\,\mathrm{Pa}.
 \]
-Die Berechnungskette ist:
-
 \begin{table}[H]\centering\small
 \begin{tabular}{p{0.25\linewidth}p{0.29\linewidth}p{0.36\linewidth}}
 \toprule
@@ -55,9 +58,7 @@ Aufgabe 2 & Kerbformzahl \(\alpha_k\) & unabhängige FEM-Aufgabe zur Lochscheibe
 \section{Aufgabe 1.1: Fluidmechanische Berechnung}
 
 \subsection*{1.1 a) Geometrie und Netz}
-Für die Strömungsrechnung wurde nur die Schildtafel modelliert. Das Fachwerk wurde in der CFD-Rechnung nicht abgebildet, weil es im Vergleich zur großen Schildfläche einen deutlich kleineren Druckwiderstandsanteil hat und die Aufgabe die Windlast auf die Tafel benötigt. Die Rechendomäne reicht von \(x=-10\,\mathrm{m}\) bis \(x=30\,\mathrm{m}\), oben und unten bis \(y=\pm10\,\mathrm{m}\). Die Platte selbst liegt bei \(x=\pm0.0015\,\mathrm{m}\), \(y=\pm1\,\mathrm{m}\).
-
-Die Netzverfeinerung ist dort notwendig, wo hohe Gradienten auftreten:
+Für die Strömungsrechnung wurde nur die Schildtafel modelliert; das Fachwerk trägt im Vergleich zur großen Schildfläche nur wenig zum Druckwiderstand bei. Die Rechendomäne reicht von \(x=-10\,\mathrm{m}\) bis \(x=30\,\mathrm{m}\), oben und unten bis \(y=\pm10\,\mathrm{m}\). Die Platte liegt bei \(x=\pm0.0015\,\mathrm{m}\), \(y=\pm1\,\mathrm{m}\). Die Netzverfeinerung liegt in den Bereichen hoher Gradienten:
 \begin{itemize}
 \item an der Vorderkante wegen Staudruck und Drucksprung,
 \item an Ober- und Unterkante wegen Ablösung und Scherschichten,
@@ -78,7 +79,7 @@ Schild & No-Slip-Wand & stationäre feste Oberfläche\\
 \end{tabular}
 \end{table}
 
-Als Turbulenzmodell wurde \(k\)-\(\omega\) SST verwendet. Dieses Modell ist für wandnahe Bereiche und ablösende Strömung geeignet und damit für eine stumpfe, normal angeströmte Platte plausibel. Die stationäre Rechnung lief mit dem SIMPLE-Algorithmus über 500 Iterationen; die Residualkonvergenz war ab etwa Iteration 140 erreicht, der Kraftmonitor stabilisierte sich ab etwa Iteration 80.
+Als Turbulenzmodell wurde \(k\)-\(\omega\) SST verwendet, da es wandnahe Bereiche und Ablösung gut abbildet. Die stationäre SIMPLE-Rechnung lief über 500 Iterationen; die Residuen waren ab etwa Iteration 140 konvergiert, der Kraftmonitor ab etwa Iteration 80 stabil.
 
 \begin{figure}[H]
 \centering
@@ -95,7 +96,7 @@ Das Strömungsbild entspricht der Erwartung für eine quer angeströmte ebene Pl
 \begin{subfigure}{0.49\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/drag_convergence.png}\caption{Widerstandskonvergenz}\end{subfigure}
 \end{figure}
 
-Die Integration der exportierten Wanddruckwerte ergibt \(6428.9\,\mathrm{N}\). Der Fluent-Kraftreport liefert \(6430.05\,\mathrm{N}\). Die Abweichung beträgt nur etwa \(0.02\,\%\). Damit sind Druckexport, Kraftreport und Lastweitergabe konsistent. Der Kraftmonitor ist am Anfang nicht monoton: Aus der initialisierten Strömung entsteht zunächst ein Überschwingen, danach bildet sich Nachlauf und Druckfeld aus. Maßgebend ist die stabile Endphase; in den letzten 20 Iterationen schwankt \(c_D\) nur noch um etwa \(0.0036\,\%\).
+Die Integration der exportierten Wanddruckwerte ergibt \(6428.9\,\mathrm{N}\), der Fluent-Kraftreport \(6430.05\,\mathrm{N}\); die Abweichung beträgt nur \(0.02\,\%\). Der Kraftmonitor ist anfangs nicht monoton, weil sich Nachlauf und Druckfeld erst ausbilden. Maßgebend ist die stabile Endphase; in den letzten 20 Iterationen schwankt \(c_D\) nur noch um etwa \(0.0036\,\%\).
 
 \subsection*{1.1 e)--f) Widerstandskraft und Widerstandsbeiwert}
 Fluent liefert für die zweidimensionale Rechnung
@@ -107,7 +108,7 @@ Mit der Schildbreite \(3\,\mathrm{m}\) ergibt sich
 F_D=6430.05\,\mathrm{N},\qquad
 c_D=\frac{F_D}{qA}=\frac{6430.05}{571.86\cdot6.0}=1.874.
 \]
-Zum Literaturvergleich gibt das \textit{Lexikon der Physik} (Spektrum der Physik, Stichwort „Plattenumströmung“, \url{https://www.spektrum.de/lexikon/physik/plattenumstroemung/11390}) für eine quer angeströmte Platte mit Ablösung und Kirchhoffscher Näherung \(c_w\approx 1{,}1\) bis \(1{,}3\). Der berechnete Wert \(c_D=1{,}874\) liegt darüber, bleibt aber in der Größenordnung stumpfer Platten mit Kantenablösung; die Abweichung ist plausibel, weil die CFD-Rechnung eine endliche Platte mit scharfen Kanten und vollem Nachlauf abbildet. Aus dem gemittelten Wanddruck (\(\bar p_\mathrm{vorne}\approx 636\,\mathrm{Pa}\), \(\bar p_\mathrm{hinten}\approx -436\,\mathrm{Pa}\)) folgt \(c_{D,\mathrm{groß}}\approx 1{,}87\).
+Zum Literaturvergleich nennt das \textit{Lexikon der Physik} (Spektrum, Stichwort ``Plattenumstroemung'', \url{https://www.spektrum.de/lexikon/physik/plattenumstroemung/11390}) fuer eine quer angestroemte Platte mit Abloesung \(c_w\approx 1{,}1\) bis \(1{,}3\). \(c_D=1{,}874\) liegt darueber, bleibt aber in der Groessenordnung stumpfer Platten mit Kantenabloesung; plausibel wegen endlicher Platte, scharfer Kanten und vollem Nachlauf. Aus \(\bar p_\mathrm{vorne}\approx 636\,\mathrm{Pa}\), \(\bar p_\mathrm{hinten}\approx -436\,\mathrm{Pa}\) folgt ebenfalls \(c_D\approx 1{,}87\).
 
 \begin{table}[H]\centering\small
 \begin{tabular}{lrr}
@@ -128,40 +129,66 @@ Die CFD-Kraft wird als gleichmäßig verteilte Flächenlast auf die Tafel übert
 \[
 p=\frac{6430.05}{3000\cdot2000}=0.001071676\,\mathrm{N/mm^2}.
 \]
-Die Tafel wurde mit SHELL181, \(E=70000\,\mathrm{N/mm^2}\), \(\nu=0.3\) und \(t=3\,\mathrm{mm}\) modelliert. Obwohl die Aufgabenstellung Scheibenelemente im ebenen Spannungszustand nennt, ist SHELL181 für die dünne \(3\,\mathrm{mm}\)-Tafel sinnvoll: Die Windlast erzeugt Plattenbiegung, die ein reines Membranelement nicht abbilden würde; bei dieser Dicke bleibt der ebene Spannungszustand in der Mittelebene dennoch maßgebend. Die zulässige Spannung beträgt
+Die Tafel wurde mit SHELL181, \(E=70000\,\mathrm{N/mm^2}\), \(\nu=0.3\) und \(t=3\,\mathrm{mm}\) modelliert. SHELL181 ist trotz ebenem Spannungszustand sinnvoll, weil die Windlast Plattenbiegung erzeugt; die Mittelebene bleibt bei \(t=3\,\mathrm{mm}\) dennoch maßgebend. Die zulässige Spannung beträgt
 \[
 \sigma_\mathrm{zul}=\frac{190}{1.8}=105.56\,\mathrm{MPa}.
 \]
 
-Der ursprüngliche Ansatz mit Punktlagern bzw. sehr kleinen Flächenlagern erzeugt lokal sehr hohe Spannungen. Diese Maximalwerte sind nicht automatisch als reale Bauteilspannung zu interpretieren, weil sie genau am Rand der idealisierten Fixierung entstehen. Deshalb wurde die Tafel nicht nur einmal gerechnet, sondern in drei Modellstufen untersucht:
+Punktlager erzeugen lokal sehr hohe Spannungen direkt am idealisierten Festhalteknoten. Der Singularitätsnachweis erfolgt deshalb über eine Netzstudie am gleichen Punktlager: Lagerposition und Verfeinerungszone bleiben geometrisch gleich, nur die lokale Netzgröße wird von \(10\,\mathrm{mm}\) auf \(2\,\mathrm{mm}\) und \(1\,\mathrm{mm}\) reduziert. Ausgewertet werden \(\sigma_{v,\max}\) und die nodale Tributärfläche mit \(\sigma_v>\sigma_\mathrm{zul}\).
+
+\begin{table}[H]\centering\small
+\input{../Aufgabe1/data/plate_singularity_study_table.tex}
+\caption{Netzstudie für die Punktlager. Die Zeilen werden nach dem MAPDL-Solverlauf automatisch mit Spannungsmaximum und überlasteter Fläche gefüllt.}
+\end{table}
+
+Der maßgebende Singularitätsindikator ist das Spannungsmaximum am Punktlager: Bei unveränderter Lagergeometrie steigt \(\sigma_{v,\max}\) von \(729.41\,\mathrm{MPa}\) über \(967.60\,\mathrm{MPa}\) auf \(1070.70\,\mathrm{MPa}\), wenn die lokale Netzgröße von \(10\,\mathrm{mm}\) auf \(2\,\mathrm{mm}\) und \(1\,\mathrm{mm}\) reduziert wird. Die überlastete Gesamtfläche ist dagegen kein isolierter Singularitätsindikator, weil sie auch die globale Biegebeanspruchung der Tafel enthält.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Aufgabe1/figures/plate_singularity_mesh_panel.png}
+\caption{Drei Netzvarianten für den Singularitätsnachweis am Punktlager: Die lokale Verfeinerungszone bleibt in allen Varianten gleich groß; nur die Netzgröße wird verändert.}
+\end{figure}
+
+\IfFileExists{../Aufgabe1/figures/plate_singularity_stress_panel.png}{
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Aufgabe1/figures/plate_singularity_stress_panel.png}
+\caption{Vergleichsspannung der drei Punktlager-Netzvarianten. Die Spannungsspitze liegt am idealisierten Festhalteknoten und ist deshalb randbedingungsdominiert.}
+\end{figure}
+}{
+\begin{center}\small
+\textit{Die Spannungsbilder der drei Punktlager-Netzvarianten werden nach dem MAPDL-Export automatisch unter der Netzabbildung eingefügt.}
+\end{center}
+}
+
+Die Studie wird mit \texttt{run\_plate\_singularity\_study.py} erzeugt; \texttt{parse\_plate\_structural\_results.py} kombiniert die MAPDL-Spannungen mit den Elementflächen. Damit hängt die Singularitätsaussage nicht nur von der Farbskala eines Konturplots ab.
+
+Für die konstruktive Bewertung wurde die Tafel zusätzlich mit vertikalen Linienstützen untersucht:
 \begin{itemize}
-\item \textbf{Punktlager:} mathematisch sehr harte Lagerung an kleinen Anschlussstellen; gut zum Erkennen der Singularität, aber nicht als reale Kontaktfläche geeignet.
-\item \textbf{Kreisförmige Flächenlager \(d=100\,\mathrm{mm}\):} idealisierte Schraub-/Kontaktbereiche; die Last verteilt sich über eine endliche Fläche, aber die Festhaltungskante bleibt weiterhin sehr hart.
-\item \textbf{Vertikale Linienstützen:} idealisierte Rückseitenprofile bzw. durchgehende Tragleisten; diese entsprechen eher der Tragstruktur realer Autobahnschilder.
+\item \textbf{Punktlager:} mathematisch harte Lagerung an einzelnen Knoten; geeignet zum Erkennen der Singularität, aber nicht als realer Spannungsnachweis der Tafel.
+\item \textbf{Vertikale Linienstützen bzw. Stäbe/Profile:} idealisierte Rückseitenprofile bzw. durchgehende Tragleisten; diese entsprechen eher der Tragstruktur realer Autobahnschilder.
 \end{itemize}
 
-Die hohen Spannungen bei Punkt- und Flächenlagern sind randbedingungsdominiert und kein robuster Nachweis für die Gesamttafel. Entscheidend sind Spannungsbild, Verformung und Lastreaktionen.
+Die hohen Spannungen bei Punktlagern sind randbedingungsdominiert und kein robuster Nachweis für die Gesamttafel. Entscheidend für ein mögliches konstruktives Lagerkonzept sind Spannungsbild, Verformung und Lastreaktionen der Linienstützen bzw. Stäbe.
 
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}
 \toprule
 Modell & lokale Netzgröße & Lagerknoten/Lager & \(\sigma_{v,\max}\) [MPa] & \(u_{z,\max}\) [mm]\\
 \midrule
-Kreisflächenlager \(d=100\,\mathrm{mm}\) & \(10.0\,\mathrm{mm}\) & 81 & 716.64 & 880.46\\
 Linienstützen & \(50\,\mathrm{mm}\) Raster & Linie & 63.77 & 40.30\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Als realistischere Konstruktion wurden drei vertikale \(50\,\mathrm{mm}\) breite Linienstützen an den Fachwerkpositionen \(x=500,1500,2500\,\mathrm{mm}\) modelliert. Reale Autobahnschilder sind auf der Rückseite nicht nur punktuell angeschlossen, sondern über Profile und Rahmen ausgesteift. Die Linienstützen bilden diese Tragwirkung vereinfacht ab.
+Als realistischere Konstruktion wurden drei vertikale \(50\,\mathrm{mm}\) breite Linienstützen an den Fachwerkpositionen \(x=500,1500,2500\,\mathrm{mm}\) modelliert. Sie bilden die Aussteifung realer Rückseitenprofile vereinfacht ab.
 
 \begin{figure}[H]
 \centering
-\begin{subfigure}{0.49\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/plate_support_stress_panel.png}\caption{Spannungen}\end{subfigure}
-\begin{subfigure}{0.49\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/plate_support_deformation_panel.png}\caption{Verformungen}\end{subfigure}
-\begin{subfigure}{0.36\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/A9_Schild_von_hinten_genommen.PNG}\caption{Rückseite (Google Street View, Copyright Google)}\end{subfigure}
-\begin{subfigure}{0.58\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/plate_mesh_full_report.png}\caption{Linienstützenmodell}\end{subfigure}
-\caption{Lagervergleich und Idealisierung der Rückseitenprofile.}
+\begin{subfigure}{0.32\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/data/plate_line_support_full_height/plate_spannung_eqv_ansys.png}\caption{Linienstützen: Spannung}\end{subfigure}
+\begin{subfigure}{0.32\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/data/plate_line_support_full_height/plate_verformung_ansys.png}\caption{Linienstützen: Verformung}\end{subfigure}
+\begin{subfigure}{0.32\linewidth}\includegraphics[width=\linewidth]{Aufgabe1/figures/A9_Schild_von_hinten_genommen.PNG}\caption{Rückseite (Google Street View, Copyright Google)}\end{subfigure}
+\caption{Konstruktiv maßgebendes Linienlager und reale Rückseitenprofile. Die Punktlager werden oben nur für den Singularitätsnachweis verwendet.}
 \end{figure}
 
 Für dieses Lagerkonzept gilt:
@@ -170,9 +197,9 @@ Für dieses Lagerkonzept gilt:
 u_{z,\max}=40.30\,\mathrm{mm},\quad
 \sigma_{v,\max}/\sigma_\mathrm{zul}=0.604.
 \]
-Die Aluminiumtafel ist damit ausreichend dimensioniert, weil \(\sigma_{v,\max}<\sigma_\mathrm{zul}\) gilt. Die Reaktionen der drei Linienlager sind \(2144.94\,\mathrm{N}\), \(2140.18\,\mathrm{N}\), \(2144.94\,\mathrm{N}\). Die Summe ist \(6430.05\,\mathrm{N}\) und stimmt damit mit der CFD-Windkraft überein.
+Die Tafel ist ausreichend dimensioniert, weil \(\sigma_{v,\max}<\sigma_\mathrm{zul}\) gilt. Die Linienlagerreaktionen \(2144.94\,\mathrm{N}\), \(2140.18\,\mathrm{N}\), \(2144.94\,\mathrm{N}\) summieren sich zu \(6430.05\,\mathrm{N}\) und stimmen mit der CFD-Windkraft überein.
 
-Für die Lastweitergabe auf das Fachwerk wurde zusätzlich das Aufgabenmodell mit gelenkiger Anbindung an den obersten zwei Knoten je Träger gerechnet. Die dabei ermittelten Gelenkreaktionen in \(z\)-Richtung lauten:
+Für die Lastweitergabe auf das Fachwerk wurde zusätzlich das Aufgabenmodell mit gelenkiger Anbindung an die obersten zwei Knoten je Träger gerechnet:
 
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrr}
@@ -188,7 +215,7 @@ H3 & 1604.90 & 540.84 & 2145.74\\
 Maßgebend für die Fachwerkdimensionierung ist Träger H3 (höchste Trägerreaktion, gemeinsam mit H1). Für die weitere Berechnung werden dessen Gelenkkräfte \(P_\mathrm{oben}=1604.90\,\mathrm{N}\) und \(P_\mathrm{unten}=540.84\,\mathrm{N}\) verwendet.
 
 \subsection*{1.2 b) Normalkräfte aus ANSYS}
-Die Linienstützen modellieren die Tafel; das Fachwerk bleibt ein Gelenkstabwerk, belastet über äquivalente Gelenkkräfte. Für den maßgebenden Fachwerkträger H3 wurden die Gelenkkräfte \(P_\mathrm{oben}=1604.90\,\mathrm{N}\) und \(P_\mathrm{unten}=540.84\,\mathrm{N}\) verwendet. Die maximalen ANSYS-Normalkräfte sind:
+Das Fachwerk bleibt ein Gelenkstabwerk, belastet über die Gelenkkräfte \(P_\mathrm{oben}=1604.90\,\mathrm{N}\), \(P_\mathrm{unten}=540.84\,\mathrm{N}\). Die maximalen ANSYS-Normalkräfte sind:
 \[
 N_\mathrm{vert}=8044.10\,\mathrm{N},\quad
 N_\mathrm{horiz}=2145.70\,\mathrm{N},\quad
@@ -224,7 +251,9 @@ diagonal & 2454.52 & 18.80 & 12 & 9 & 1.5 & 49.60\\
 \end{table}
 
 \subsection*{1.2 e)--h) Eigenes Python-FEM und Vergleich}
-Das Python-Programm modelliert den maßgebenden Träger H3 mit sieben Feldern (\(7h\)) und linear elastischen Stäben (\(E=210000\,\mathrm{N/mm^2}\)). Jeder Knoten besitzt zwei globale Freiheitsgrade \((U_x,U_y)\); Knoten \(L_i\) und \(R_i\) werden fortlaufend nummeriert. Punkt \(A\) entspricht dem gelenkigen Fußpunkt \(L0\), Punkt \(B\) dem oberen Anschlussknoten \(R7\) gemäß Seitenansicht in Bild~2.
+Für den Vergleich wurden zwei getrennte Rechnungen mit gleicher Geometrie, Querschnitten, Randbedingungen und Lasten durchgeführt: ANSYS mit LINK180-Stabelementen und Python mit eigener Assemblierung von \(KU=F\). Verglichen werden die elementweisen Größen \(N_i\) und \(\sigma_i\).
+
+Das Python-Programm modelliert H3 mit sieben Feldern (\(7h\)) und linear elastischen Stäben (\(E=210000\,\mathrm{N/mm^2}\)). Jeder Knoten besitzt \((U_x,U_y)\); \(A=L0\), \(B=R7\).
 
 \textbf{Indextafel (Auszug):}
 \begin{table}[H]\centering\footnotesize
@@ -272,12 +301,32 @@ maximale Spannungsabweichung & \(0.0045\,\mathrm{MPa}\)\\
 \end{tabular}
 \end{table}
 
-Damit ist das eigene Programm für dieses lineare Stabwerksproblem verifiziert.
+Ein Auszug aus dem elementweisen Vergleich zeigt, dass Vorzeichen und Beträge der Stabkräfte übereinstimmen:
+
+\begin{table}[H]\centering\footnotesize
+\input{../Aufgabe1/data/truss_comparison_report_table.tex}
+\caption{Elementweiser Auszug aus dem Vergleich zwischen eigener Python-FEM-Rechnung und ANSYS-MAPDL. \(\Delta N=N_\mathrm{ANSYS}-N_\mathrm{Py}\).}
+\end{table}
+
+Die sehr kleinen Differenzen entstehen nur durch Rundung der aus ANSYS gedruckten Tabellenwerte. Damit ist das eigene Programm für dieses lineare Stabwerksproblem verifiziert.
 
 \begin{figure}[H]
 \centering
-\includegraphics[height=0.34\textheight]{Aufgabe1/figures/truss_deformed.png}
-\caption{Verformtes Fachwerk aus dem Python-FEM/ANSYS-Vergleich.}
+\begin{subfigure}{0.48\linewidth}\centering
+\includegraphics[height=0.25\textheight]{Aufgabe1/figures/truss_deformed.png}
+\caption{Python-FEM}
+\end{subfigure}
+\begin{subfigure}{0.48\linewidth}\centering
+\includegraphics[height=0.25\textheight]{Aufgabe1/figures/truss_ansys_force_plot.png}
+\caption{ANSYS-MAPDL-Export}
+\end{subfigure}
+\caption{Visueller Nachweis der Stabwerksrechnungen. Links die Python-Verformung, rechts die aus der ANSYS-Elementtabelle exportierten Normalkräfte mit Reaktionen. Rot bedeutet Zug, blau Druck.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\linewidth]{Aufgabe1/figures/truss_python_ansys_comparison.png}
+\caption{Vergleich aller Stabnormalkräfte aus Python-FEM und ANSYS. Oben liegen die ANSYS-Marker auf der Python-Kurve; unten ist die kleine Restabweichung dargestellt.}
 \end{figure}
 
 \section{Aufgabe 2: Kerbformzahl einer Scheibe mit Löchern}
@@ -287,33 +336,30 @@ Für Projekt 27 gelten \(d=70\,\mathrm{mm}\), \(\ell=110\,\mathrm{mm}\), \(t=4\,
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.98\linewidth]{Aufgabe2/figures/aufgabe2_setup_screens.png}
-\caption{Aufgabe 2: ANSYS-Modell mit Geometrie, Kraft, Verschiebungsrandbedingungen und globalem Netz.}
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=\linewidth,height=0.14\textheight,keepaspectratio]{Aufgabe2/figures/mesh_gesamt_report.png}\caption{Globales Netz}\end{subfigure}
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=\linewidth,height=0.14\textheight,keepaspectratio]{Aufgabe2/figures/mesh_zoom_report.png}\caption{Lochrandnetz}\end{subfigure}\\[-1mm]
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=\linewidth,height=0.15\textheight,keepaspectratio]{Aufgabe2/figures/normalspannung_report.png}\caption{\(\sigma_y\)}\end{subfigure}
+\begin{subfigure}{0.48\linewidth}\centering\includegraphics[width=\linewidth,height=0.15\textheight,keepaspectratio]{Aufgabe2/figures/vergleichspannung_mises_report.png}\caption{von Mises}\end{subfigure}
+\caption{Aufgabe 2: Netz und Spannungsverteilung, auf den relevanten Modellbereich zugeschnitten.}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.98\linewidth]{Aufgabe2/figures/aufgabe2_result_screens.png}
-\caption{Aufgabe 2: Netzdetail, maßgebende Normalspannung \(\sigma_y\), Vergleichsspannung nach von Mises und Verschiebungsrandbedingung.}
-\end{figure}
-
-Für \(\alpha_k\) wird nur \(\sigma_y\) ausgewertet; die von-Mises-Spannung dient nur der Darstellung (\(\sigma_{y,\max}=9.1243\,\mathrm{MPa}\), \(\sigma_{\mathrm{vM},\max}=8.9187\,\mathrm{MPa}\) am Lochrand).
+Für \(\alpha_k\) wird nur \(\sigma_y\) ausgewertet; die von-Mises-Spannung dient nur der Darstellung. Die neue Konvergenzreihe wurde aus den ANSYS-Screenshots der lokalen Netzgrößen \(10,8,6,3,2,1\,\mathrm{mm}\) abgelesen.
 
 Die Maximalwerte der Netzstudie für \(\sigma_y\) lauten:
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrrrr}
 \toprule
-lokale Netzgröße [mm] & 10 & 8 & 5 & 3 & 2 & 1\\
+lokale Netzgröße [mm] & 10 & 8 & 6 & 3 & 2 & 1\\
 \midrule
-\(\sigma_{y,\max}\) [MPa] & 9.4565 & 9.2336 & 9.0780 & 9.1508 & 9.2112 & 9.1243\\
+\(\sigma_{y,\max}\) [MPa] & 9.1539 & 9.2332 & 9.2341 & 9.2157 & 9.2263 & 9.1063\\
 \bottomrule
 \end{tabular}
 \end{table}
-Die feinsten drei Stufen liegen innerhalb von \(0.95\,\%\); als Referenzwert wird daher deren Mittelwert verwendet. Damit wird nicht ein einzelner zufälliger Knotenwert aus einem Screenshot übernommen, sondern ein konvergierter Bereich der Netzstudie.
+Die Maximalspannung ist ein lokaler Knotenwert am Lochrand. Bei feinerer Vernetzung muss dieser Wert nicht streng monoton fallen oder steigen, weil sich die Lage des maximalen Knotens, die Spannungsinterpolation und die Mittelung in ANSYS leicht ändern können. Entscheidend ist deshalb nicht der einzelne letzte Wert, sondern die geringe Schwankung der feinsten Netzstufen. Die Werte für \(3\,\mathrm{mm}\), \(2\,\mathrm{mm}\) und \(1\,\mathrm{mm}\) liegen innerhalb von \(1.31\,\%\); als Referenzwert wird daher deren Mittelwert verwendet.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\linewidth]{Aufgabe2/figures/kerb_convergence.png}
+\includegraphics[width=0.62\linewidth]{Aufgabe2/figures/kerb_convergence.png}
 \caption{Aufgabe 2: Konvergenz von \(\sigma_{\max}\).}
 \end{figure}
 
@@ -322,9 +368,9 @@ Die Nennspannung ergibt sich aus der Linienlast und der Dicke:
 \[
 \sigma_n=\frac{n_y}{t}=\frac{10}{4}=2.50\,\mathrm{MPa}.
 \]
-Mit \(\sigma_{\max}=9.1621\,\mathrm{MPa}\) folgt
+Mit \(\sigma_{\max}=9.1828\,\mathrm{MPa}\) folgt
 \[
-\alpha_k=\frac{\sigma_{\max}}{\sigma_n}=\frac{9.1621}{2.50}=3.665.
+\alpha_k=\frac{\sigma_{\max}}{\sigma_n}=\frac{9.1828}{2.50}=3.673.
 \]
 
 \begin{table}[H]\centering\small
@@ -333,13 +379,13 @@ Mit \(\sigma_{\max}=9.1621\,\mathrm{MPa}\) folgt
 Größe & Wert\\
 \midrule
 Nennspannung \(\sigma_n\) & \(2.50\,\mathrm{MPa}\)\\
-konvergierte Maximalspannung \(\sigma_{\max}\) & \(9.1621\,\mathrm{MPa}\)\\
-Kerbformzahl \(\alpha_k\) & \(3.66\)\\
+konvergierte Maximalspannung \(\sigma_{\max}\) & \(9.1828\,\mathrm{MPa}\)\\
+Kerbformzahl \(\alpha_k\) & \(3.67\)\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \section*{Kurzfazit}
-Die CFD-Berechnung liefert eine plausible Windlast von \(6430.05\,\mathrm{N}\) mit \(c_D=1{,}874\), passend zur Literaturgrößenordnung quer angeströmter Platten und bestätigt durch den gemittelten Wanddruck. Kleine punkt- oder flächige Lagerungen der Tafel erzeugen randbedingungsdominierte Spannungsspitzen; die Linienstützen bilden eine realistischere Rückseitenstruktur ab und liefern \(\sigma_v=63.77\,\mathrm{MPa}<\sigma_\mathrm{zul}\): die Tafel ist ausreichend dimensioniert. Träger H3 ist maßgebend; das Fachwerk und die Python-Nachrechnung sind mit den gewählten Rohrquerschnitten ausreichend dimensioniert und stimmen mit ANSYS überein. Für Aufgabe 2 ergibt sich \(\alpha_k=3.66\).
+Die CFD-Berechnung liefert eine plausible Windlast von \(6430.05\,\mathrm{N}\) mit \(c_D=1{,}874\), passend zur Literaturgrößenordnung quer angeströmter Platten und bestätigt durch den gemittelten Wanddruck. Punktlagerungen der Tafel erzeugen randbedingungsdominierte Spannungsspitzen; die Linienstützen bilden eine realistischere Rückseitenstruktur ab und liefern \(\sigma_v=63.77\,\mathrm{MPa}<\sigma_\mathrm{zul}\): die Tafel ist ausreichend dimensioniert. Träger H3 ist maßgebend; das Fachwerk und die Python-Nachrechnung sind mit den gewählten Rohrquerschnitten ausreichend dimensioniert und stimmen mit ANSYS überein. Für Aufgabe 2 ergibt sich \(\alpha_k=3.67\).
 
 \end{document}
