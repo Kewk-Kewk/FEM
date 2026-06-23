@@ -1,3 +1,16 @@
+"""Aufgabe 1.2 — Parser fuer die ANSYS-MAPDL-Fachwerkergebnisse.
+
+Liest die PRETAB-Ausgabe (Elementtabelle mit Axialkraeften und Spannungen)
+aus der ANSYS-Ausgabedatei und vergleicht sie elementweise mit den
+Python-FEM-Ergebnissen.
+
+Eingabe:  truss_structural_solver.out (ANSYS-Ausgabe)
+          truss_index_table.csv (Element-Zuordnung)
+          truss_element_forces.csv (Python-FEM-Ergebnisse)
+Ausgabe:  truss_apdl_element_forces.csv
+          truss_comparison_python_ansys.csv
+          truss_comparison_summary.txt
+"""
 from __future__ import annotations
 
 import argparse

@@ -8,7 +8,6 @@ from aufgabe1_params import get_params
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Compute Aufgabe 1.1 drag force and cD.")
-    parser.add_argument("--project", type=int, default=27)
     parser.add_argument("--drag-file", type=Path, default=Path("Aufgabe1/drag_plate.out"))
     parser.add_argument("--summary", type=Path, default=Path("Aufgabe1/out/drag_summary.txt"))
     return parser.parse_args()
@@ -38,7 +37,7 @@ def write_summary(path: Path, lines: list[str]) -> None:
 
 def main() -> None:
     args = parse_args()
-    params = get_params(args.project)
+    params = get_params()
     history = read_drag_history(args.drag_file)
     iteration, drag_per_depth = history[-1]
 

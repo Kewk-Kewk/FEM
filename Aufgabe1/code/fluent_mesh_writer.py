@@ -1,3 +1,15 @@
+"""Konvertierung von Gmsh-Netzdaten in das Fluent-.msh-Textformat.
+
+Dieses Modul liest die von Gmsh erzeugten Knoten, Zellen und
+Randzuordnungen und schreibt eine Fluent-kompatible .msh-Datei
+mit korrekter Konnektivitaet, Zelltypes und Randbedingungen.
+
+Format-Details:
+  - Section 10: Knoten (x, y)
+  - Section 12: Zellen (Dreiecke oder Vierecke)
+  - Section 13: Faces (innere + Rand-Faces)
+  - Section 39: Zonen-Definitionen
+"""
 from __future__ import annotations
 
 from collections import defaultdict

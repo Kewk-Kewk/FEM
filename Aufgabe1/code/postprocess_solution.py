@@ -1,3 +1,15 @@
+"""Aufgabe 1.1 c)–f) — CFD-Nachbearbeitung und Ergebnisexport.
+
+Liest die geloeste Fluent-Falldatei, exportiert:
+  - Kraftreport (Druck- und Reibungsanteil)
+  - Wanddruckverteilung als CSV
+  - Konturbilder (Druck, Geschwindigkeit)
+  - Druckverteilungsplot (Vorder-/Rueckseite)
+  - Widerstandskonvergenzplot
+  - Netzvisualisierung aus Gmsh
+
+Benoetigt eine laufende Fluent-Instanz (PyFluent).
+"""
 from __future__ import annotations
 
 import argparse
@@ -25,7 +37,6 @@ FORCE_LINE_RE = re.compile(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Create Aufgabe 1.1 postprocessing outputs.")
-    parser.add_argument("--project", type=int, default=27)
     parser.add_argument("--case", type=Path, default=Path("Aufgabe1/out/plate_2d_solution.cas.h5"))
     parser.add_argument("--out-dir", type=Path, default=Path("Aufgabe1/out"))
     parser.add_argument("--wall", default="plate_wall")
@@ -276,7 +287,7 @@ def write_summary(path: Path, params, force_report: dict[str, float]) -> None:
 
 def main() -> None:
     args = parse_args()
-    params = get_params(args.project)
+    params = get_params()
     args.out_dir.mkdir(parents=True, exist_ok=True)
     ensure_awp_root()
 

@@ -1,3 +1,13 @@
+"""Aufgabe 1.1 — Fluent-Loeser-Template fuer die 2D-Plattenumstroemung.
+
+Laedt ein 2D-Netz in Fluent, setzt Randbedingungen
+(Einlass = 30.56 m/s, Auslass = p=0, Wand = No-Slip, Symmetrie oben/unten),
+waehlt k-omega SST als Turbulenzmodell und loest stationaer ueber 500 Iterationen.
+
+Ausgabe: Case+Data-Datei, Drag-Monitor-Datei, drag_summary.txt.
+
+Benoetigt: ansys-fluent-core (PyFluent), lizenzierte ANSYS-Installation.
+"""
 from __future__ import annotations
 
 import argparse
@@ -12,7 +22,6 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Load a 2D mesh and set up the Aufgabe 1.1 Fluent solver case."
     )
-    parser.add_argument("--project", type=int, default=27, help="Project number")
     parser.add_argument("--mesh", type=Path, required=True)
     parser.add_argument("--cores", type=int, default=2)
     parser.add_argument("--iterations", type=int, default=500)
@@ -80,7 +89,7 @@ def main() -> None:
     import ansys.fluent.core as pyfluent
 
     args = parse_args()
-    params = get_params(args.project)
+    params = get_params()
 
     if not args.mesh.exists():
         raise FileNotFoundError(args.mesh)
