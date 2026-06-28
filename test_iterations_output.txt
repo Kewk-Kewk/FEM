@@ -1,0 +1,3 @@
+Starting Fluent iterations test...
+Import succeeded!
+Error during setup: Could not execute /solve/set/number-of-iterations 100 as Fluent editor is not running. Please start editor first.

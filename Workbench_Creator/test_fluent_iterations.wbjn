@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+import os
+
+out_file = "c:/Users/Moritz/Desktop/FEM/test_iterations_output.txt"
+
+with open(out_file, "w") as f:
+    f.write("Starting Fluent iterations test...\n")
+    try:
+        fluent_template = GetTemplate(TemplateName="Fluid Flow")
+        cfd_system = fluent_template.CreateSystem()
+        setup = cfd_system.GetContainer(ComponentName="Setup")
+        
+        mesh_path = "c:/Users/Moritz/Desktop/FEM/Aufgabe_1_1_CFD_Stroemung/data/plate_2d_fluent.msh"
+        
+        try:
+            setup.Import(FilePath=mesh_path, FileType="Mesh")
+            f.write("Import succeeded!\n")
+            
+            # Send command to set iterations
+            setup.SendCommand(Command="/solve/set/number-of-iterations 100")
+            f.write("SendCommand succeeded!\n")
+        except Exception as e:
+            f.write("Error during setup: %s\n" % str(e))
+            
+    except Exception as e:
+        f.write("General error: %s\n" % str(e))

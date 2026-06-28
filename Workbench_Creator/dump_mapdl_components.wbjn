@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+import os
+
+out_file = "c:/Users/Moritz/Desktop/FEM/mapdl_components_output.txt"
+
+with open(out_file, "w") as f:
+    f.write("MAPDL Components Dump:\n")
+    try:
+        t = GetTemplate(TemplateName="Mechanical APDL")
+        sys = t.CreateSystem()
+        
+        f.write("\nComponents in System:\n")
+        for c in sys.Components:
+            f.write("Component Name: %s, Type: %s\n" % (c.Name, str(c.Type)))
+            try:
+                # Let's list properties of the component
+                f.write("  Properties:\n")
+                for p in c.GetProperties():
+                    f.write("    %s = %s\n" % (p.Name, str(p.Value)))
+            except Exception as e:
+                f.write("    Error getting properties: %s\n" % str(e))
+                
+    except Exception as e:
+        f.write("General error: %s\n" % str(e))

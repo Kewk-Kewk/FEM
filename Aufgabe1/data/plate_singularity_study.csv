@@ -1,4 +1,0 @@
-status,case_dir,local_refinement_mm,mesh_size_mm,support_diameter_mm,support_influence_mm,nodes,elements,support_node_count,max_eqv_stress_MPa,max_abs_UZ_mm,area_over_allowable_mm2,area_over_allowable_percent
-ausgewertet,/home/moritz/Desktop/fem/Aufgabe1/out/plate_singularity_study/h10,10,50,100,200,7985,15768,6,729.41,1201.30,2612031.4,43.5339
-ausgewertet,/home/moritz/Desktop/fem/Aufgabe1/out/plate_singularity_study/h2,2,50,100,200,29525,58848,6,967.60,1201.60,2613774.7,43.5629
-ausgewertet,/home/moritz/Desktop/fem/Aufgabe1/out/plate_singularity_study/h1,1,50,100,200,56450,112698,6,1070.70,1201.70,2609452.9,43.4909

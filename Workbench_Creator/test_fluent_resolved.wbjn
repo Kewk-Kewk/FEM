@@ -1,0 +1,17 @@
+﻿# -*- coding: utf-8 -*-
+# Test-Journal: Nur Fluent-Case importieren (ohne MAPDL Edit/SendCommand)
+
+SetScriptVersion(Version="26.1")
+
+print("TEST: Erstelle Fluent-System mit Case-Import...")
+fluent_template = GetTemplate(TemplateName="Fluid Flow")
+cfd_system = fluent_template.CreateSystem()
+cfd_system.DisplayText = "Aufgabe 1.1: CFD Stroemung"
+
+setup_cfd = cfd_system.GetContainer(ComponentName="Setup")
+setup_cfd.Import(FilePath="C:/Users/Moritz/Desktop/FEM/Aufgabe_1_1_CFD_Stroemung/out/plate_2d_solution.cas.h5", FileType="Case")
+print("TEST: Fluent Case importiert.")
+
+Save(FilePath="Aufgabe_1_test.wbpj", Overwrite=True)
+print("TEST: Projekt gespeichert.")
+

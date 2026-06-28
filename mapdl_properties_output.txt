@@ -1,0 +1,5 @@
+MAPDL Properties Dump:
+
+Setup Container Properties:
+Error getting Setup properties: 'DataContainerReference' object has no attribute 'GetProperties'
+General error: Im System 'APDL' wurde keine Komponente mit dem Namen oder Basisnamen 'Analysis' gefunden.

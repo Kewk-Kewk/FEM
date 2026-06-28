@@ -1,0 +1,40 @@
+MAPDL Setup Properties Dump:
+
+Setup dir:
+Clean
+Container
+DeleteShare
+DeleteTransfer
+DirectoryName
+DisplayText
+GetContainer
+GetEntityProperties
+GetEntityProperty
+GetExpression
+GetProperties
+GetProperty
+HasAssociatedParameter
+Name
+Notes
+Refresh
+RemoveFromSystem
+ReplaceWithShare
+Reset
+SetEntityProperties
+SetEntityProperty
+SimulationSetEntityProperty
+ToString
+TransferData
+TransferSpecificData
+Type
+Update
+UpdateConditionParameter
+UpdateUpstreamComponents
+UserId
+
+Setup properties:
+Prop: DirectoryName
+Prop: UpdateConditionParameter
+Prop: UserId
+Prop: Notes
+Prop: DisplayText

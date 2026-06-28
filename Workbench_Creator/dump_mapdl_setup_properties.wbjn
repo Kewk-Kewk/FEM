@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+import os
+
+out_file = "c:/Users/Moritz/Desktop/FEM/mapdl_setup_properties.txt"
+
+with open(out_file, "w") as f:
+    f.write("MAPDL Setup Properties Dump:\n")
+    try:
+        t = GetTemplate(TemplateName="Mechanical APDL")
+        sys = t.CreateSystem()
+        setup = sys.GetComponent(Name="Setup")
+        
+        f.write("\nSetup dir:\n")
+        for d in dir(setup):
+            f.write("%s\n" % str(d))
+            
+        f.write("\nSetup properties:\n")
+        try:
+            for p in setup.GetProperties():
+                f.write("Prop: %s\n" % str(p))
+        except Exception as e:
+            f.write("Error: %s\n" % str(e))
+            
+    except Exception as e:
+        f.write("General error: %s\n" % str(e))

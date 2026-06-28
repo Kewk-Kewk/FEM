@@ -1,155 +1,133 @@
 # Modularbeit FEM und CFD - Projekt Nr. 27
 
-This repository contains the code, data and figures behind the assignment
-report. It was cleaned up so that only the material actually used in the
-report remains in the working tree.
+Dieses Repository enthält den bereinigten Code, die Daten und die Abbildungen für den Abschlussbericht der Modularbeit FEM und CFD (Projekt Nr. 27). Alle Ordner, Definitionsdateien und Ausführungsskripte wurden ins Deutsche übersetzt und umfassend kommentiert, um eine maximale Nachvollziehbarkeit für den Korrektor zu gewährleisten.
 
-## Repository layout
+## Struktur des Repositories
 
 ```text
 .
-├── README.md                  # this file
-├── assignment.pdf             # the task sheet
-├── report/
-│   ├── bericht_aufgabe1.tex   # the report (source of truth for all figures)
-│   └── bericht_aufgabe1.pdf   # compiled report
-├── Aufgabe1/
-│   ├── code/
-│   │   ├── run_cfd.py                     # ENTRY-POINT: Aufgabe 1.1 (CFD)
-│   │   ├── run_plate.py                   # ENTRY-POINT: Aufgabe 1.2a (plate)
-│   │   ├── run_truss.py                   # ENTRY-POINT: Aufgabe 1.2b-d (ANSYS truss)
-│   │   ├── run_python_fem.py              # ENTRY-POINT: Aufgabe 1.2e-h (Python FEM)
-│   │   ├── make_report_figures.py         # generates all report figures
-│   │   ├── aufgabe1_params.py             # project parameters (all 36 variants)
-│   │   ├── utils.py                       # shared helpers (read_summary_value)
-│   │   ├── generate_plate_mesh.py         # Gmsh mesh generation (CFD)
-│   │   ├── fluent_mesh_writer.py          # Gmsh → Fluent .msh conversion
-│   │   ├── fluent_env.py                  # PyFluent environment setup
-│   │   ├── solve_plate_2d_template.py     # Fluent solver driver
-│   │   ├── postprocess_solution.py        # CFD post-processing (PyFluent)
-│   │   ├── postprocess_drag.py            # drag history parser
-│   │   ├── structural_plate_apdl.py       # APDL generator for plate (SHELL181)
-│   │   ├── structural_truss_apdl.py       # APDL generator for truss (LINK180)
-│   │   ├── structural_truss_1_2.py        # Python FEM truss solver
-│   │   ├── parse_plate_structural_results.py  # plate results parser
-│   │   ├── parse_truss_apdl_results.py    # truss results parser
-│   │   └── run_plate_singularity_study.py # singularity mesh study
-│   ├── data/                  # minimal inputs needed to rebuild the figures
-│   ├── figures/               # final figures used by the report
-│   ├── requirements.txt       # Python dependencies
-│   ├── README_Workflow.md     # step-by-step CFD / ANSYS workflow
-│   └── README_Setup.md        # PyFluent / environment setup
-├── Aufgabe2/
-│   ├── code/
-│   │   └── aufgabe2_kerb.py   # notch-factor (Kerbformzahl) script
-│   ├── data/                  # convergence data
-│   ├── figures/               # final figures used by the report
-│   └── screenshots/final_report/  # final ANSYS Workbench screenshots
-└── _archive_unused/           # deprecated/test code, solver runs, ANSYS projects
+├── README.md                           # Diese Datei
+├── requirements.txt                    # Python-Abhängigkeiten
+├── assignment_page-2.png               # Aufgabenstellung Bild
+├── bericht/
+│   ├── bericht.tex                     # LaTeX-Bericht (Source of Truth für den Bericht)
+│   └── bericht.pdf                     # Kompiliertes PDF des Berichts
+│
+├── Gemeinsamer_Code/                   # Geteilte Python-Module für Solver, Vernetzung und Visualisierung
+│   ├── apdl_ergebnis_parser.py         # Parser für ANSYS-Ergebnisse
+│   ├── apdl_fachwerk.py                # Vorlagen für Fachwerk-APDL-Dateien
+│   ├── apdl_platte_schale.py           # Vorlagen für Platten-APDL-Dateien
+│   ├── berichts_abbildungen.py         # Rendering-Logik für Berichtsabbildungen
+│   ├── cfd_auswertung.py               # Postprocessing der CFD-Ergebnisse
+│   ├── cfd_netz_generierung.py         # Gmsh-Netzgenerierung
+│   ├── erzeuge_berichts_grafiken.py    # Hauptskript zur Regeneration aller Grafiken
+│   ├── fluent_loesung_vorlage.py       # Fluent-Löser-Setup
+│   ├── fluent_netz_schreiber.py        # Netzkonverter (Gmsh zu Fluent)
+│   ├── fluent_umgebung.py              # Umgebungskonfiguration für Fluent
+│   ├── hilfsfunktionen.py              # Gemeinsame Hilfsfunktionen
+│   └── python_fem_loesung.py           # Kern-Löser der Python-FEM
+│
+├── Aufgabe_1_1_CFD_Stroemung/
+│   ├── Definitionen_und_Ausfuehrung.py # Parameter und Ablauf für CFD (Gmsh/Fluent)
+│   ├── data/                           # CFD-Netze und stationäre Druckdaten
+│   └── figures/                        # CFD-Grafiken für den Bericht
+│
+├── Aufgabe_1_2a_Plattenstruktur/
+│   ├── Definitionen_und_Ausfuehrung.py # Parameter und Ablauf für FE-Platte (SHELL181)
+│   ├── Singularitaetsstudie.py         # Netzstudie zur Spannungssingularität
+│   ├── data/                           # FE-Lagerkräfte und Konvergenztabelle
+│   └── figures/                        # Grafiken zur Plattenbeanspruchung
+│
+├── Aufgabe_1_2b_d_Fachwerk_ANSYS/
+│   ├── Definitionen_und_Ausfuehrung.py # Parameter und APDL-Skripte für Fachwerk (LINK180)
+│   ├── data/                           # ANSYS-Kräfte und -Lagerreaktionen
+│   └── figures/                        # Visualisierungen der ANSYS-Rechnung
+│
+├── Aufgabe_1_2e_h_Fachwerk_Python/
+│   ├── Definitionen_und_Ausfuehrung.py # Parameter und Python-FE-Löser (Steifigkeitsmethode)
+│   ├── data/                           # Vergleichsdaten Python vs. ANSYS
+│   └── figures/                        # Deformierte Struktur aus Python
+│
+├── Aufgabe_2/
+│   ├── Definitionen_und_Ausfuehrung.py # Nennspannung und Formzahlberechnung (alpha_k)
+│   ├── data/                           # Konvergenzdaten für das Workbench-Modell
+│   └── figures/                        # Diagramm der Konvergenz und Screenshots
+│
+└── Workbench_Creator/                  # Automatisches Setup des Workbench-Projekts (Aufgabe 1)
+    ├── README_Workbench.md             # Dokumentation zur Ausführung
+    ├── erzeuge_projekt.wbjn            # IronPython Workbench-Journal
+    └── starte_workbench_generierung.py # Startskript für Windows-Systeme
 ```
 
-## Quick start: entry-point scripts
+## Schnellstart: Hauptskripte der Aufgaben
 
-Each sub-task has a dedicated entry-point script with all parameters
-for **Projekt 27** set at the top:
+Jede Aufgabe verfügt in ihrem Verzeichnis über eine zentrale Datei `Definitionen_und_Ausfuehrung.py`. Am Anfang dieser Skripte sind alle geometrischen und physikalischen Parameter für das **Projekt Nr. 27** explizit definiert und ausführlich auf Deutsch dokumentiert.
 
-| Sub-task | Script | Requires ANSYS? |
-|---|---|---|
-| 1.1 CFD | `python Aufgabe1/code/run_cfd.py` | Fluent (steps 2+3) |
-| 1.2a Plate | `python Aufgabe1/code/run_plate.py` | MAPDL |
-| 1.2b-d Truss (ANSYS) | `python Aufgabe1/code/run_truss.py` | MAPDL |
-| 1.2e-h Truss (Python FEM) | `python Aufgabe1/code/run_python_fem.py` | **No** |
-| 2 Kerbformzahl | `python Aufgabe2/code/aufgabe2_kerb.py` | **No** |
-| All report figures | `python Aufgabe1/code/make_report_figures.py` | **No** |
+| Aufgabe | Skript | Benötigt ANSYS? | Beschreibung |
+|---|---|---|---|
+| **1.1 CFD Strömung** | `Aufgabe_1_1_CFD_Stroemung/Definitionen_und_Ausfuehrung.py` | Nur für Fluent-Lösung (Schritte 2+3) | Erzeugt die Gmsh- und Fluent-Netze der Platte |
+| **1.2a Platte** | `Aufgabe_1_2a_Plattenstruktur/Definitionen_und_Ausfuehrung.py` | Nur für MAPDL-Löser | Schreibt APDL-Inp-Dateien für die Schalenberechnung |
+| **1.2b-d Fachwerk ANSYS** | `Aufgabe_1_2b_d_Fachwerk_ANSYS/Definitionen_und_Ausfuehrung.py` | Nur für MAPDL-Löser | Schreibt APDL-Inp-Skripte für die Fachwerkberechnung |
+| **1.2e-h Fachwerk Python** | `Aufgabe_1_2e_h_Fachwerk_Python/Definitionen_und_Ausfuehrung.py` | **Nein** | Berechnet das Fachwerk komplett autark mit Python |
+| **2 Kerbformzahl** | `Aufgabe_2/Definitionen_und_Ausfuehrung.py` | **Nein** | Berechnet Formzahl und Nennspannungsvergleich |
+| **Workbench-Erstellung** | `Workbench_Creator/starte_workbench_generierung.py` | **Ja** (ANSYS Workbench) | Erstellt das gesamte Workbench-Projekt für Aufgabe 1 |
 
-## Rebuilding the report figures
+## Einrichtung der Python-Umgebung
 
-All report figures are produced by a single script:
-
-```bash
-python Aufgabe1/code/make_report_figures.py
-```
-
-It reads the curated inputs in `Aufgabe1/data`, `Aufgabe2/data` and
-`Aufgabe2/screenshots/final_report`, and writes the final PNGs into
-`Aufgabe1/figures` and `Aufgabe2/figures`. Rebuilding the CFD contour/mesh
-figures additionally needs the `h5dump` command-line tool on the PATH.
-
-## Compiling the report
-
-The report uses repository-root-relative image paths together with
-`\graphicspath{{../}}`, so compile it from inside `report/`:
+Um die Python-Skripte lokal auszuführen, wird die Einrichtung einer virtuellen Umgebung empfohlen:
 
 ```bash
-cd report
-pdflatex bericht_aufgabe1.tex
-```
+# 1. Virtuelle Umgebung erstellen
+python -m venv .venv
 
-## Reproducing the full simulations
-
-To run the python scripts, it is highly recommended to use the provided virtual environment:
-```bash
+# 2. Aktivierung der Umgebung
+# Unter Windows (PowerShell):
+.\.venv\Scripts\activate
+# Unter Linux / macOS:
 source .venv/bin/activate
+
+# 3. Python-Bibliotheken installieren
+pip install -r requirements.txt
 ```
 
-Here are the complete commands to run the pipelines end-to-end on Linux (using `wine` for ANSYS MAPDL):
+## Regeneration aller Berichtsabbildungen
 
-### 1. CFD Pipeline (Requires Windows PyFluent)
-```bash
-python Aufgabe1/code/run_cfd.py
-```
-*(Note: Running PyFluent through Wine is currently not supported. This step requires a native Windows environment or a native Linux ANSYS installation.)*
+Die im LaTeX-Bericht verwendeten Abbildungen können gesammelt über das zentrale Skript neu generiert werden:
 
-### 2. Structural Plate Pipeline
-Generate the APDL scripts:
 ```bash
-python Aufgabe1/code/run_plate.py
-```
-Run ANSYS MAPDL via Wine:
-```bash
-export ANSYS_EXE="$HOME/.wine/drive_c/Program Files/ANSYS Inc/ANSYS Student/v261/ansys/bin/winx64/ansys261.exe"
-wine "$ANSYS_EXE" -b -i Aufgabe1/out/plate_structural.inp -o Aufgabe1/out/plate_structural_solver.out -dir Aufgabe1/out -j plate_1_2
-wine "$ANSYS_EXE" -b -i Aufgabe1/out/plate_post_probe.inp -o Aufgabe1/out/plate_post_probe.out -dir Aufgabe1/out -j plate_1_2_post
-wine "$ANSYS_EXE" -b -i Aufgabe1/out/plate_export_plots.inp -o Aufgabe1/out/plate_export_plots.out -dir Aufgabe1/out -j plate_1_2_plots
-```
-Extract the results:
-```bash
-python Aufgabe1/code/parse_plate_structural_results.py --results Aufgabe1/out/plate_structural_results.txt --post-output Aufgabe1/out/plate_post_probe.out --apdl Aufgabe1/out/plate_structural.inp --out-dir Aufgabe1/out
+python Gemeinsamer_Code/erzeuge_berichts_grafiken.py
 ```
 
-### 3. Truss Pipeline (ANSYS)
-Generate the APDL scripts (Requires `plate_hinge_reactions.csv` from a point-support plate run):
-```bash
-python Aufgabe1/code/run_truss.py
-```
-Run ANSYS MAPDL via Wine:
-```bash
-wine "$ANSYS_EXE" -b -i Aufgabe1/out/structural_truss.inp -o Aufgabe1/out/structural_truss_solver.out -dir Aufgabe1/out -j truss_1_2
-wine "$ANSYS_EXE" -b -i Aufgabe1/out/truss_export_plots.inp -o Aufgabe1/out/truss_export_plots.out -dir Aufgabe1/out -j truss_1_2_plots
-```
-Extract the results:
-```bash
-python Aufgabe1/code/parse_truss_apdl_results.py --element-table Aufgabe1/out/truss_element_table.txt --summary Aufgabe1/out/truss_summary.txt
-```
+Das Skript liest die Ergebnisdaten aus den Aufgabenschritten und schreibt die fertigen PNGs in die jeweiligen `figures/`-Ordner.
 
-### 4. Truss Pipeline (Python FEM)
+## Kompilieren des LaTeX-Berichts
+
+Der Bericht befindet sich im Verzeichnis `bericht/` und kann über folgenden Aufruf gebaut werden:
+
 ```bash
-python Aufgabe1/code/run_python_fem.py
+cd bericht
+pdflatex bericht.tex
 ```
+*(Hinweis: Für die korrekte Generierung des Inhaltsverzeichnisses und der Referenzen sollte der Befehl zweimal ausgeführt werden).*
 
-### 5. Aufgabe 2 (Kerbformzahl)
-```bash
-python Aufgabe2/code/aufgabe2_kerb.py
-```
+## Alles durchlaufen lassen:
 
-## Code overview for the Python FEM solver
+# 1. Virtuelle Umgebung aktivieren
+.\.venv\Scripts\activate
 
-The Python FEM implementation (`structural_truss_1_2.py`) follows the
-standard direct stiffness method:
+# 2. Ausführen der fünf Aufgabenskripte und der Singularitätsstudie
+python Aufgabe_1_1_CFD_Stroemung/Definitionen_und_Ausfuehrung.py
+python Aufgabe_1_2a_Plattenstruktur/Definitionen_und_Ausfuehrung.py
+python Aufgabe_1_2a_Plattenstruktur/Singularitaetsstudie.py
+python Aufgabe_1_2b_d_Fachwerk_ANSYS/Definitionen_und_Ausfuehrung.py
+python Aufgabe_1_2e_h_Fachwerk_Python/Definitionen_und_Ausfuehrung.py
+python Aufgabe_2/Definitionen_und_Ausfuehrung.py
 
-1. **Topology**: Build nodes and bar elements for the 7-panel truss
-2. **Element stiffness**: Compute K^(e) = (EA/L) * [c²  cs  ...] for each bar
-3. **Assembly**: K[I[a], I[b]] += Ke[a, b]  (loop over element DOF pairs)
-4. **BCs**: Fix DOFs 0, 1, 3 (L0 in x/y, R0 in y)
-5. **Solve**: U = K_ff^{-1} * F_f
-6. **Post-process**: Axial forces N = (EA/L) * [-c, -s, c, s] · u_e
+# 3. Alle Abbildungen und Tabellen für den Bericht generieren
+python Gemeinsamer_Code/erzeuge_berichts_grafiken.py
+
+# 4. LaTeX-Bericht kompilieren (zweimal ausführen für korrektes Inhaltsverzeichnis)
+cd bericht
+pdflatex bericht.tex
+pdflatex bericht.tex
+cd ..

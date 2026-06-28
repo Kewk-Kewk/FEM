@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+# Workbench Journal: Gesamtprojekt Aufgabe 1 (Fluent + 2x MAPDL)
+#
+# Fluent:  importiert die geloeste Case-Datei (BCs + Ergebnisse aus PyFluent)
+# MAPDL:   AddInputFile + Edit(LoadInputFiles=True) fuehrt die .inp-Skripte aus
+
+SetScriptVersion(Version="26.1")
+
+# ============================================================
+# 1. Fluent (Aufgabe 1.1)
+# ============================================================
+print(">>> Schritt 1/3: Fluent-System...")
+fluent_template = GetTemplate(TemplateName="Fluid Flow")
+cfd_system = fluent_template.CreateSystem()
+cfd_system.DisplayText = "Aufgabe 1.1: CFD Stroemung"
+
+setup_cfd = cfd_system.GetContainer(ComponentName="Setup")
+setup_cfd.Import(FilePath="__FLUENT_IMPORT_PATH__", FileType="__FLUENT_IMPORT_TYPE__")
+print(">>> Fluent-Datei importiert.")
+
+Save(FilePath="Aufgabe_1.wbpj", Overwrite=True)
+print(">>> Zwischengespeichert (Fluent fertig).")
+
+# ============================================================
+# 2. MAPDL Platte (Aufgabe 1.2a)
+# ============================================================
+print(">>> Schritt 2/3: MAPDL Plattenstruktur...")
+mapdl_template = GetTemplate(TemplateName="Mechanical APDL")
+plate_system = mapdl_template.CreateSystem(
+    Position="Right",
+    RelativeTo=cfd_system
+)
+plate_system.DisplayText = "Aufgabe 1.2a: Plattenstruktur (APDL)"
+
+setup_plate = plate_system.GetContainer(ComponentName="Setup")
+setup_plate.AddInputFile(FilePath="__PLATE_INP_PATH__")
+print(">>> Platten-Input verknuepft, starte MAPDL...")
+setup_plate.Edit(Interactive=False, LoadInputFiles=True)
+setup_plate.Exit()
+print(">>> Plattenstruktur abgeschlossen.")
+
+Save(FilePath="Aufgabe_1.wbpj", Overwrite=True)
+print(">>> Zwischengespeichert (Platte fertig).")
+
+# ============================================================
+# 3. MAPDL Fachwerk (Aufgabe 1.2b-d)
+# ============================================================
+print(">>> Schritt 3/3: MAPDL Fachwerk...")
+truss_system = mapdl_template.CreateSystem(
+    Position="Right",
+    RelativeTo=plate_system
+)
+truss_system.DisplayText = "Aufgabe 1.2b-d: Fachwerk (APDL)"
+
+setup_truss = truss_system.GetContainer(ComponentName="Setup")
+setup_truss.AddInputFile(FilePath="__TRUSS_INP_PATH__")
+print(">>> Fachwerk-Input verknuepft, starte MAPDL...")
+setup_truss.Edit(Interactive=False, LoadInputFiles=True)
+setup_truss.Exit()
+print(">>> Fachwerk abgeschlossen.")
+
+Save(FilePath="Aufgabe_1.wbpj", Overwrite=True)
+print(">>> ANSYS Workbench Projekt erfolgreich erstellt!")

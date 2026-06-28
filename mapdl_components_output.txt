@@ -1,0 +1,6 @@
+MAPDL Components Dump:
+
+Components in System:
+Component Name: Setup, Type: Component
+  Properties:
+    Error getting properties: 'str' object has no attribute 'Name'
